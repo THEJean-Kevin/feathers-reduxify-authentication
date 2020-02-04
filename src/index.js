@@ -1,6 +1,5 @@
-
-import { createAction, handleActions } from 'redux-actions';
 import makeDebug from 'debug';
+import { createAction, handleActions } from 'redux-actions';
 
 // handles situation where a logout is dispatched while an authentication is in progress
 
@@ -25,12 +24,18 @@ export default (app, options = {}) => {
       resetToken: undefined,
     },
   };
-  const opts = Object.assign({}, defaults, options);
+  const opts = { ...defaults, ...options };
 
   const reducer = {
-    [`SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.PENDING}`]: (state, action) => {
-      debug(`redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.PENDING}`, action);
-      return ({
+    [`SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.PENDING}`]: (
+      state,
+      action,
+    ) => {
+      debug(
+        `redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.PENDING}`,
+        action,
+      );
+      return {
         ...state,
         [opts.isError]: null,
         [opts.isLoading]: true,
@@ -38,12 +43,18 @@ export default (app, options = {}) => {
         [opts.user]: null,
         [opts.token]: null,
         ignorePendingAuth: false,
-      });
+      };
     },
 
-    [`SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.FULFILLED}`]: (state, action) => {
-      debug(`redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.FULFILLED}`, action);
-      const user = action.payload.data;
+    [`SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.FULFILLED}`]: (
+      state,
+      action,
+    ) => {
+      debug(
+        `redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.FULFILLED}`,
+        action,
+      );
+      const { user } = action.payload.user;
 
       if (state.ignorePendingAuth) {
         // A logout was dispatched between the authentication being started and completed
@@ -80,14 +91,20 @@ export default (app, options = {}) => {
         [opts.isError]: null,
         [opts.isLoading]: false,
         [opts.isSignedIn]: true,
-        [opts.user]: Object.assign({}, user, opts.assign),
+        [opts.user]: { ...user, ...opts.assign },
         [opts.token]: action.payload[opts.token],
         ignorePendingAuth: false,
       };
     },
 
-    [`SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.REJECTED}`]: (state, action) => {
-      debug(`redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.REJECTED}`, action);
+    [`SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.REJECTED}`]: (
+      state,
+      action,
+    ) => {
+      debug(
+        `redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.REJECTED}`,
+        action,
+      );
       return {
         ...state,
         // action.payload = { name: "NotFound", message: "No record found for id 'G6HJ45'",
@@ -105,7 +122,7 @@ export default (app, options = {}) => {
       debug('redux:SERVICES_AUTHENTICATION_LOGOUT', action);
       app.logout();
 
-      return ({
+      return {
         ...state,
         [opts.isError]: null,
         [opts.isLoading]: null,
@@ -114,7 +131,7 @@ export default (app, options = {}) => {
         [opts.token]: null,
         // Ignore the result if an authentication has been started
         ignorePendingAuth: state.isLoading,
-      });
+      };
     },
 
     SERVICES_AUTHENTICATION_USER: (state, action) => {
@@ -125,7 +142,7 @@ export default (app, options = {}) => {
         user = { ...user, ...action.payload };
       }
 
-      return ({
+      return {
         ...state,
         [opts.isError]: null,
         [opts.isLoading]: null,
@@ -133,7 +150,7 @@ export default (app, options = {}) => {
         [opts.user]: user,
         // A logout may be dispatched between the authentication being started and completed
         ignorePendingAuth: false,
-      });
+      };
     },
   };
 
@@ -146,22 +163,20 @@ export default (app, options = {}) => {
   return {
     // ACTION CREATORS
     // Note: action.payload in reducer will have the value of .data below
-    authenticate: createAction(
-      AUTHENTICATE, (p) => ({ promise: app.authenticate(p), data: undefined })
-    ),
+    authenticate: createAction(AUTHENTICATE, (p) => ({
+      promise: app.authenticate(p),
+      data: undefined,
+    })),
     logout: createAction(LOGOUT),
     user: createAction(USER),
 
     // REDUCER
-    reducer: handleActions(
-      reducer,
-      {
-        [opts.isError]: null,
-        [opts.isLoading]: false,
-        [opts.isSignedIn]: false,
-        [opts.user]: null,
-        ignorePendingAuth: false,
-      }
-    ),
+    reducer: handleActions(reducer, {
+      [opts.isError]: null,
+      [opts.isLoading]: false,
+      [opts.isSignedIn]: false,
+      [opts.user]: null,
+      ignorePendingAuth: false,
+    }),
   };
 };
