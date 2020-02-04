@@ -1,5 +1,5 @@
 {
-  "name": "feathers-reduxify-authentication",
+  "name": "feathers-reduxify-authentication-v4",
   "version": "1.0.0",
   "description": "Wrap feathers-client.authentication so it works with Redux, as well as authentication, authorization packages for React-Router.",
   "files": [
