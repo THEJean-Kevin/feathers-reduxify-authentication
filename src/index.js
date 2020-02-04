@@ -54,7 +54,7 @@ export default (app, options = {}) => {
         `redux:SERVICES_AUTHENTICATION_AUTHENTICATE_${opts.FULFILLED}`,
         action,
       );
-      const { user } = action.payload.user;
+      const { user } = action.payload;
 
       if (state.ignorePendingAuth) {
         // A logout was dispatched between the authentication being started and completed
